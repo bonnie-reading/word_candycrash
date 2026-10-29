@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>圈詞消消樂 六上</title>
+<link href="https://fonts.googleapis.com/css2?family=Huninn&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F1ECFF;--panel:#fff;--ink:#2A1B4D;--muted:#6B5E8C;--line:#DDD2F7;--accent:#FF4F8B;--accent2:#FF9A3C;--board:#E6DDFB;--choco1:#4B3621;--choco2:#3A2815;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1B0F36;--panel:#2A1A50;--ink:#F5EFFF;--muted:#BBAAE3;--line:#43317D;--board:#1F1240}}
+:root[data-theme="dark"]{--bg:#1B0F36;--panel:#2A1A50;--ink:#F5EFFF;--muted:#BBAAE3;--line:#43317D;--board:#1F1240}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;line-height:1.6;min-height:100vh}
+button,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent2);outline-offset:2px}
+.wrap{max-width:1080px;margin:0 auto;padding:20px 16px 48px}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px}
+h1{margin:0;font-size:clamp(24px,4vw,34px);line-height:1.2;letter-spacing:.04em}
+h1 span{background:linear-gradient(90deg,#FF4F8B,#FF9A3C 50%,#8B5CF6);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{margin:2px 0 0;color:var(--muted);font-size:13px}
+.btn{border:0;border-radius:14px;padding:10px 16px;font-weight:700;cursor:pointer;transition:transform .12s}
+.btn:active{transform:translateY(2px)}
+.btn-ghost{background:var(--panel);border:2px solid var(--line)}
+.btn-main{background:linear-gradient(135deg,#FF5C8A,#FF9A3C);color:#fff;box-shadow:0 4px 0 #C93A66;text-shadow:0 1px 0 rgba(0,0,0,.2)}
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;align-items:end;background:var(--panel);border:2px solid var(--line);border-radius:20px;padding:14px;margin-bottom:18px}
+.controls label.f{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+select{width:100%;padding:9px 10px;border-radius:12px;border:2px solid var(--line);background:var(--bg);font-weight:700}
+.sw{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;cursor:pointer;padding:9px 0}
+.sw input{width:20px;height:20px;accent-color:var(--accent)}
+.layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:18px}
+@media (max-width:860px){.layout{grid-template-columns:1fr}}
+.card{background:var(--panel);border:2px solid var(--line);border-radius:24px;padding:18px}
+.bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:8px}
+.bar h2{margin:0;font-size:22px}
+.pill{background:var(--bg);border:2px solid var(--line);border-radius:999px;padding:2px 12px;font-size:13px;font-weight:700}
+.pill b{color:var(--accent);font-size:16px}
+.board-wrap{position:relative;max-width:520px;margin:0 auto}
+#grid{display:grid;gap:10px;padding:12px;background:var(--board);border-radius:22px;aspect-ratio:1;user-select:none;-webkit-user-select:none}
+.tile{position:relative;border:0;border-radius:18px;font-family:inherit;font-weight:900;font-size:clamp(24px,6.5vw,40px);cursor:pointer;color:var(--ink);
+background:linear-gradient(160deg,#fff,#EFE8FF);
+box-shadow:inset 0 3px 0 rgba(255,255,255,.7),inset 0 -6px 0 rgba(60,30,120,.14),0 5px 0 rgba(60,30,120,.2);
+transition:transform .12s,box-shadow .12s,opacity .25s}
+.tile.col{background:linear-gradient(160deg,var(--c1),var(--c2));color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.25);
+box-shadow:inset 0 3px 0 rgba(255,255,255,.5),inset 0 -6px 0 rgba(0,0,0,.2),0 5px 0 rgba(0,0,0,.22)}
+.tile.col.dk{color:#4A3200;text-shadow:0 1px 0 rgba(255,255,255,.5)}
+.tile::after{content:"";position:absolute;left:14%;top:9%;width:34%;height:16%;border-radius:50%;background:rgba(255,255,255,.55);transform:rotate(-20deg);pointer-events:none}
+.tile:hover:not(:disabled){transform:translateY(-2px)}
+.tile.sel{transform:translateY(3px) scale(1.06);outline:4px solid #FFD23F;outline-offset:1px;animation:pop .28s ease-out;z-index:2}
+@keyframes pop{50%{transform:translateY(0) scale(1.16)}}
+.tile.done{background:var(--board);color:transparent;text-shadow:none;box-shadow:inset 0 3px 8px rgba(0,0,0,.18);transform:scale(.88);cursor:default}
+.tile.done::after{display:none}
+.tile.choco{background:repeating-linear-gradient(45deg,var(--choco1),var(--choco1) 9px,var(--choco2) 9px,var(--choco2) 18px);box-shadow:inset 0 3px 8px rgba(0,0,0,.5);cursor:default;font-size:22px;color:#9C7A5B}
+.tile.choco::after{display:none}
+.lead{position:absolute;top:-6px;left:-6px;width:22px;height:22px;border-radius:50%;background:#fff;color:var(--accent);font-size:12px;display:grid;place-items:center;box-shadow:0 2px 0 rgba(0,0,0,.25);text-shadow:none;z-index:1}
+.hint{display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:center;margin:14px 0 0;color:var(--muted);font-size:12px}
+.win{position:absolute;inset:0;display:none;place-items:center;text-align:center;background:rgba(40,20,90,.82);border-radius:22px;color:#fff;padding:20px;z-index:5}
+.win.show{display:grid}
+.win h3{font-size:28px;margin:0 0 6px}
+.goal{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-radius:18px;border:2px solid var(--line);margin-bottom:10px}
+.goal .w{display:flex;align-items:center;gap:12px;font-weight:900;font-size:30px;line-height:1.2}
+.dot{width:22px;height:22px;border-radius:50%;background:linear-gradient(160deg,var(--c1),var(--c2));box-shadow:inset 0 2px 0 rgba(255,255,255,.55)}
+.goal.off{opacity:.5}.goal.off .w span.t{text-decoration:line-through}
+.mini{border:2px solid var(--line);background:var(--bg);border-radius:10px;padding:7px 13px;font-size:16px;font-weight:700;cursor:pointer}
+.perk{display:flex;gap:10px;padding:10px;border-radius:16px;background:var(--bg);font-size:13px;margin-top:8px}
+.perk .e{font-size:22px}
+dialog{border:0;border-radius:26px;padding:0;max-width:min(560px,94vw);width:100%;background:var(--panel);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.4)}
+dialog::backdrop{background:rgba(25,10,60,.55);backdrop-filter:blur(3px)}
+.m{padding:24px;text-align:center;border-top:8px solid var(--accent2);border-radius:26px}
+.m h3{font-size:48px;line-height:1.2;margin:0 0 10px}
+.m .box{background:var(--bg);border-radius:16px;padding:14px;text-align:left;margin-bottom:16px;font-size:24px;line-height:1.7}
+.m .box small{display:block;color:var(--muted);font-weight:700;font-size:16px;margin-bottom:2px}
+.m .box p{margin:0 0 10px}.m .box p:last-child{margin:0}
+.pic{font-size:68px;line-height:1;width:116px;height:116px;margin:0 auto 6px;display:grid;place-items:center;border-radius:30px;background:linear-gradient(160deg,var(--bg),var(--board));box-shadow:inset 0 3px 0 rgba(255,255,255,.4),0 4px 0 var(--line)}
+.spk-row{display:flex;gap:6px;justify-content:center;margin-bottom:12px;flex-wrap:wrap}
+.spk-row .mini{padding:7px 14px;font-size:16px}
+.gb{display:flex;gap:8px}.em{font-size:32px}
+mark{background:#FFD23F;color:#4A3200;border-radius:6px;padding:0 3px;font-weight:900}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.print-only{display:none}
+@media print{body{background:#fff;color:#000}.screen{display:none!important}.print-only{display:block}
+.pg{padding:8px;font-family:inherit}.pg h1{font-size:22px}
+.pcols{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:20px}
+#pgrid{display:grid;gap:6px;border:2px solid #000;padding:8px;aspect-ratio:1;max-width:340px;margin:0 auto}
+#pgrid div{border:1px solid #888;display:grid;place-items:center;font-weight:700;font-size:20px;aspect-ratio:1}
+#pgrid .c{background:#ccc;font-size:12px}
+.pt{display:flex;gap:8px;align-items:center;border-bottom:1px solid #ddd;padding:6px 0;font-size:14px}
+#wgrid{display:grid;grid-template-columns:repeat(12,1fr);border-left:2px solid #000;border-top:2px solid #000;margin-top:10px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+#wgrid div{aspect-ratio:1;border-right:2px solid #000;border-bottom:2px solid #000;background:linear-gradient(#0000 49%,#bbb 49% 51%,#0000 51%),linear-gradient(90deg,#0000 49%,#bbb 49% 51%,#0000 51%)}
+.rule{background:#f3f3f3;border:1px solid #ccc;padding:8px;font-size:12px;border-radius:6px}}
+</style>
+</head>
+<body>
+<div class="wrap screen">
+  <header>
+    <div>
+      <h1>🍬 <span>圈詞消消樂</span> <small style="font-size:.5em;color:var(--muted)">六上</small></h1>
+      <p class="sub">國語六上　第一～六課</p>
+    </div>
+    <button class="btn btn-ghost" onclick="window.print()">🖨️ 列印學習單</button>
+  </header>
+
+  <section class="controls" aria-label="出題設定">
+    <div><label class="f" for="lesson">課次</label>
+      <select id="lesson">
+        <option value="1">第一課　跑道</option><option value="2">第二課　朱子治家格言選</option><option value="3">第三課　談遇見更好的自己</option>
+        <option value="4">第四課　臺灣美食詩選</option><option value="5">第五課　最好的味覺禮物</option><option value="6">第六課　珍珠奶茶</option>
+      </select></div>
+    <div><label class="f" for="diff">難度</label>
+      <select id="diff"><option value="easy">初階：4×4，巧克力遮蔽</option><option value="medium" selected>中階：4×4，混合干擾</option><option value="hard">挑戰：5×5，全是干擾字</option></select></div>
+    <label class="sw"><input type="checkbox" id="scaf" checked> 糖果配色與詞首提示</label>
+    <label class="sw"><input type="checkbox" id="voice" checked> 🔊 點字就發音</label><button class="btn btn-main" id="regen">🔄 重新洗牌</button>
+  </section>
+
+  <div class="layout">
+    <section class="card">
+      <div class="bar"><h2>消除盤面</h2><span class="pill">剩下 <b id="left">0</b> 個詞</span></div>
+      <div class="board-wrap">
+        <div id="grid" role="group" aria-label="糖果棋盤"></div>
+        <div class="win" id="win" role="status"><div><div style="font-size:54px">🌈</div><h3>全部引爆！</h3><p>彩虹糖果大獎是你的了</p><button class="btn btn-main" onclick="generate()">再玩一關</button></div></div>
+      </div>
+      <p class="hint"><span>點相鄰的糖果（可以轉彎），連成詞就會消除</span><span>🍫 巧克力塊不能點</span></p>
+    </section>
+
+    <aside>
+      <div class="card">
+        <div class="bar"><h2>本關目標</h2><span class="pill" id="badge"></span></div>
+        <div id="goals"></div>
+      </div>
+      <div class="card" style="margin-top:18px">
+        <h2 style="font-size:16px;margin:0 0 4px">特殊糖果</h2>
+        <div class="perk"><span class="e">🍭</span><span><b>條紋糖果</b>　說出詞義或造一個短句，全班拍手加 1 分。</span></div>
+        <div class="perk"><span class="e">🌈</span><span><b>彩虹糖果</b>　清空整個棋盤，可換一次自選任務。</span></div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<dialog id="dlg"><div class="m">
+  <div class="pic" id="mp"></div><h3 id="mw"></h3><div class="spk-row"><button class="mini" onclick="sayList([$('mw').textContent])">🔊 詞語</button><button class="mini" onclick="sayList([$('md').textContent])">🔊 解釋</button><button class="mini" onclick="sayList([$('ms').textContent])">🔊 例句</button><button class="mini" onclick="sayList([$('mw').textContent,$('md').textContent,$('ms').textContent])">▶ 全部</button></div>
+  <div class="box"><small>白話解釋</small><p id="md"></p><small>例句</small><p id="ms"></p></div>
+  <button class="btn btn-main" style="width:100%" onclick="dlg.close()">繼續挑戰</button>
+</div></dialog>
+
+<div class="print-only"><div class="pg">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #000;padding-bottom:8px">
+    <div><h1>圈詞消消樂 學習單</h1><div id="ptitle"></div></div><div style="font-size:13px">五年____班　座號：____　姓名：________</div></div>
+  <p class="rule"><b>任務規則：</b>在棋盤中找出相鄰（上下左右，可以轉彎）能組成生詞的字，用色筆框起來，唸出來後在右側打勾。黑色格子不能連線。</p>
+  <div class="pcols"><div><h3 style="text-align:center">糖果棋盤</h3><div id="pgrid"></div></div>
+  <div><h3>今日目標</h3><div id="ptargets"></div></div></div>
+  <div style="margin-top:20px;font-size:15px;font-weight:700">⭐ 加分挑戰：選一個你消除的詞，寫一個通順的短句。<br>我選的詞是【　　　　　】</div><div id="wgrid"></div>
+</div></div>
+
+<script>
+// 詞庫：詞 | 解釋 | 例句
+const RAW={
+1:["第一課　跑道",`壓軸|最精采、最棒的大明星或好戲，都在最後面才登場！|演唱會的壓軸表演總是吸引所有人的目光。
+委屈|明明不是你的錯卻被怪罪，心裡酸酸的、好想哭。|被同學誤會時，小明心裡感到非常委屈。
+心存芥蒂|心裡像鞋子跑進小沙子，踩著卡卡的、不舒服。|自從那次吵架後，他們兩人心存芥蒂，不再像以前一樣親密。
+無理取鬧|不講道理、躺在地板耍賴鬧脾氣。|妹妹因為想買玩具而在地上無理取鬧，讓媽媽很頭痛。
+尷尬|覺得好丟臉、不好意思，好想找個洞鑽進去藏起來！|我不小心在走廊上叫錯別人的名字，當下覺得好尷尬。
+慚愧|發現自己做錯事了，覺得很對不起別人，不好意思抬頭。|發現自己錯怪了同桌，小華感到十分慚愧。
+默默|不吵不鬧、安安靜靜地自己做事情。|看到媽媽在做家事，小強默默地幫忙擦桌子。
+鬥志|握緊拳頭，在心裡大喊「我這次一定要贏！」的超級決心。|面對強勁的對手，球員們個個鬥志高昂、全力以赴。
+扭曲|用力到整張臉都擠在一起、歪歪斜斜的樣子。|他跑步衝刺時太賣力了，連表情都跟著扭曲了起來。
+猛然|動作超級快、一瞬間發生的「突然」。|走到校門口時，他猛然想起自己忘了帶水壺。
+愣住|傻傻地發呆，整個人像被按了暫停鍵一動也不動。|聽到明天不用上學的消息，大家都驚訝得愣住了。
+拱手讓人|自己不爭取，白白把第一名或寶貝送給別人。|比賽時如果不專心，原本第一名的機會就會拱手讓人。
+勝券在握|很有信心，覺得第一名已經放進口袋裡、贏定了！|他的分數遙遙領先，大家一致認為他這次勝券在握。
+不相上下|兩個人一樣厲害，分不出誰更好。|這兩位選手的跑步速度不相上下，很難分出勝負。
+盡心盡力|用盡自己 100% 的力氣與真心去做好一件事。|這次的班級打掃，每位同學都盡心盡力地把環境清理乾淨。`],
+2:["第二課　朱子治家格言選",`未雨綢繆|壞事還沒發生前，先提早準備好（像明天可能下雨，今晚就把傘放進書包）。|出門前先看天氣預報並帶傘，就是未雨綢繆的好習慣。
+臨渴掘井|事情都到了眼前，才手忙腳亂去處理（像明天要考試，今晚才翻開課本）。|明天要期末考，今晚才臨渴掘井翻開課本，會來不及準備。
+物力維艱|世界上所有的東西都是大家辛苦做出來的，絕對不能浪費。|農夫辛勤種稻，我們要懂得物力維艱，每一粒米都要愛惜。
+半絲半縷|就算是再小、再不起眼的小線頭或小東西，也要好好愛惜。|衣服上的每一條線都很珍貴，就算是半絲半縷也不隨意浪費。
+瓦缶|外表普通但非常好用的泥土小水罐。|廚房裡樸實的瓦缶雖然外觀普通，卻非常耐用。
+珍饈|超高級、超豪華的美味大餐！|過年時餐桌上擺滿了各種美味珍饈，令人食指大動。
+施惠|主動伸出雙手幫別人的忙，不吵著要報酬。|我們主動施惠幫助需要的人，不用刻意求回報。
+凡事留餘地|做事不做得太絕，原諒別人、給別人改過的機會。|原諒不小心犯錯的同學，凡事留餘地，給人改過的機會。
+樂極生悲|高興得太過頭、玩瘋了，結果反而發生受傷或難過的事。|玩得太瘋太得意，結果不小心摔跤受傷，真是樂極生悲。
+幸災樂禍|看到別人倒楣，心裡卻在偷偷高興偷笑（這樣是不對的喔！）。|看到別人跌倒時應該去扶他，而不是在旁邊幸災樂禍。
+得意忘形|開心過頭了，興奮到忘記注意規矩或分寸。|獲獎後他高興得得意忘形，差點打翻了桌上的獎杯。`],
+3:["第三課　談遇見更好的自己",`卓越|表現超級棒、比一般人厲害很多！（像比賽拿大獎的 MVP）|經過每天不間斷的練習，他在音樂比賽中表現非常卓越。
+瑣事|生活裡小小的、雜七雜八的小事情（像擦桌子、找鉛筆）。|姐姐做事情很有條理，連生活中的各項瑣事都處理得井井有條。
+無異|跟某個東西一模一樣，完全沒有差別！|這兩幅畫描繪得極其相似，看起來無異於出自同一位畫家之手。
+惋惜|覺得好可惜、好遺憾的感覺（像冰淇淋剛拿到手就掉地上）。|這支優秀的隊伍因為小失誤落敗，大家都很為他們感到惋惜。
+欠缺|身上或手邊少了一樣東西、不夠用。|他雖然很有天分，但如果欠缺練習，也無法獲得好成績。
+砥礪|夥伴之間互相加油打氣、一起磨練，讓彼此變得更棒！|我和同桌互相砥礪、一起複習課業，期待這次考試能共同進步。
+驕傲自滿|考了一次一百分就覺得自己最厲害，不肯再認真學習。|考了一百分後，他依然保持謙虛，完全沒有驕傲自滿。
+耕耘|默默付出時間和汗水去努力做好一件事（像農夫辛苦種菜）。|一分耕耘，一分收穫，付出多少汗水就會有多少成果。
+茁壯|像小樹苗吸收了陽光和水，慢慢長高、變得很強壯！|花園裡的小樹苗在陽光和雨水的滋潤下漸漸茁壯長大。
+別出心裁|想出的點子很特別、很有創意，跟別人都不一樣！|這份生日禮物的包裝很別出心裁，給人帶來滿滿的驚喜。
+伯仲之間|兩人的實力非常接近，厲害程度差不多、分不出高下！|這兩位選手實力在伯仲之間，最後的冠軍歸屬很難預料。
+持之以恆|每天都堅持去做，不偷懶、不半途而廢！|只要每天持之以恆地閱讀書籍，語文能力自然會提升。
+精益求精|已經做得很好看了，還想辦法練習讓自己做得更完美！|這名廚師對料理品質要求極高，總是希望作品能精益求精。
+日積月累|每天努力一點點，時間久了就會累積成驚人的大進步！|每天養成好習慣，日積月累下來就能看見巨大的進步。
+隔靴搔癢|隔著厚鞋抓癢抓不到重點；比喻說話做事沒碰到核心。|這篇報告如果沒有指出核心問題，就只是隔靴搔癢而已。`],
+4:["第四課　臺灣美食詩選",`一言九鼎|說話非常算話、很有信用，講出來的話就像大石頭一樣重！|說話要講信用，做到「一言九鼎」，大家才會信任你。
+緩緩|慢慢地、一點一點地移動或流動。|熱氣騰騰的米漿沿著鼎邊緩緩流下，凝固成香 Q 的米皮。
+山珍海味|山上跑的、海裡游的各種超美味高級食材！|夜市小吃攤裡擺滿了山珍海味，令人眼花撩亂。
+華燈初上|天色剛變暗、街上的路燈與店家招牌紛紛亮起來的時候。|每當華燈初上、夜幕降臨時，夜市就開始變得非常熱鬧。
+晶瑩透亮|像水晶一樣透光發亮、乾乾淨淨又漂亮的樣子。|剛出鍋的蒸肉圓外皮晶瑩透亮，看起來十分誘人。
+醃製|用鹽、醬油或香料把食材泡著，讓味道深深吸進去。|媽媽用醬油和蒜頭醃製肉片，煮出來的料理特別入味。
+攪拌|用湯匙或筷子轉圈圈，把裡面的東西混均勻。|做蛋糕時，要把麵粉和牛奶充分攪拌均勻。
+油炸|把食物放進滾熱的油鍋裡炸得金黃酥脆。|剛油炸出來的金黃薯條，口感酥脆香甜。
+饗宴|非常豐盛、讓人吃得開心、玩得滿足的大型宴會或體驗。|這場音樂與美食結合的饗宴，給顧客留下了深刻的印象。
+彰顯|清楚地展示出來，讓大家都看得明明白白。|傳統小吃的獨特風味，彰顯了在地豐富的飲食文化。`],
+5:["第五課　最好的味覺禮物",`迫不及待|心裡急得不得了，連一秒鐘都等不下去了！|看到桌上香噴噴的蛋糕，弟弟迫不及待地拿起了叉子。
+誘人|太吸引人了，讓人忍不住想看、想吃、想靠近！|烤箱裡傳出誘人的麵包香氣，讓人忍不住口水直流。
+按部就班|按照第一步、第二步、第三步的順序，一步一步好好做。|按照食譜的步驟按部就班地做，就能做出美味的料理。
+粉身碎骨|碰的一下被打得非常碎、變成碎末小塊。|果汁機的刀片快速轉動，把水果打得粉身碎骨、化為果汁。
+純粹|非常乾淨單純，完全沒有加入別的雜質。|這杯新鮮現榨的水果汁，口感非常純粹天然。
+熬夜|到了睡覺時間還不睡，硬撐著熬到半夜或天亮。|為了身體健康，我們應該養成早睡的好習慣，不要熬夜。
+混合|把兩種以上的東西加在一起、攪和在一塊。|把南瓜泥和牛奶混合均勻後，煮出來的濃湯香醇濃郁。
+焦糖|蔗糖加熱後變成金黃色、帶有濃濃香氣的甜甜糖漿。|布丁上面淋了一層金黃色的焦糖，滋味香甜可口。
+舀水|拿勺子或碗，把水或湯裝起來盛出來。|媽媽拿著大湯勺，從大鍋裡舀水加進湯裡。
+流淌|液體順順地、像小溪一樣流出來。|切開新鮮多汁的哈密瓜，甜美的果汁立刻流淌出來。
+充沛|水份或體力超級多，滿滿的、非常夠用！|睡飽之後，我覺得體力充沛、精神百倍。
+舔拭|伸出舌頭去舔東西、擦乾淨。|小貓伸出舌頭舔拭身上的毛，模樣非常可愛。`],
+6:["第六課　珍珠奶茶",`風靡|超級流行、紅到大家都超級喜歡，像刮起一陣大風！|珍珠奶茶口感獨特，迅速風靡了全世界。
+圓潤|形狀圓圓的、表面光滑又漂亮。|煮熟的粉圓顆顆圓潤光亮，口感十分 Q 彈。
+交織|兩種不同的味道或色彩互相編織在一起、融為一體。|濃郁的奶香與茶香交織在一起，口感格外層次豐富。
+碰撞|兩種東西撞在一塊兒，激盪出很棒的新體驗！|當珍珠與奶茶在口中碰撞，帶來滿滿的幸福感。
+包容|大方地接受不同的事物或意見，不排斥別人。|這道美食展現了飲食文化中的創意與包容。
+膨脹|吸收了水份或熱氣後，體積變大、鼓了起來。|將粉圓放入沸水中煮，幾分鐘後粉圓就會漸漸膨脹。
+濃稠|液體黏黏的、厚厚的，流得很慢。|煮好黑糖漿後，質地會變得十分濃稠。
+衡量|在心裡秤一秤重量或想一想，仔細考慮抓好份量。|做料理時要仔細衡量食材的比例，才能調出最佳風味。
+徜徉|無憂無慮地在一個廣闊舒適的地方散步或休閒。|假日走在森林步道上，徜徉在大自然清新涼爽的空氣中。
+撫摸|用手輕輕地、溫柔地摸一摸。|妹妹溫柔地撫摸著懷裡的小狗，小狗舒服得閉上了眼睛。`]};
+const VOCAB={};
+for(const k in RAW){VOCAB[k]={title:RAW[k][0],words:RAW[k][1].split("\n").map(l=>{const p=l.split("|");return{word:p[0],def:p[1],sentence:p[2]}})}}
+
+const PIC={壓軸:'🎤',委屈:'🥺',心存芥蒂:'👟',無理取鬧:'😭',尷尬:'😅',慚愧:'🙇',默默:'🤫',鬥志:'🔥',扭曲:'😖',猛然:'💡',愣住:'😳',拱手讓人:'🎁',勝券在握:'🏆',不相上下:'⚖️',盡心盡力:'💯',未雨綢繆:'☂️',臨渴掘井:'⛏️',物力維艱:'🌾',半絲半縷:'🧵',瓦缶:'🏺',珍饈:'🍱',施惠:'🤲',凡事留餘地:'🤝',樂極生悲:'🤕',幸災樂禍:'😏',得意忘形:'🤩',卓越:'🏅',瑣事:'🧽',無異:'🟰',惋惜:'🍦',欠缺:'🧩',砥礪:'🤜',驕傲自滿:'😎',耕耘:'👨‍🌾',茁壯:'🌱',別出心裁:'🎀',伯仲之間:'🤼',持之以恆:'📆',精益求精:'🔍',日積月累:'📈',隔靴搔癢:'🥾',一言九鼎:'🗿',緩緩:'🐌',山珍海味:'🦞',華燈初上:'🏮',晶瑩透亮:'💎',醃製:'🧂',攪拌:'🥣',油炸:'🍟',饗宴:'🍽️',彰顯:'📣',迫不及待:'⏰',誘人:'🍰',按部就班:'📋',粉身碎骨:'🍹',純粹:'💧',熬夜:'🌙',混合:'🥤',焦糖:'🍮',舀水:'🥄',流淌:'🍈',充沛:'🔋',舔拭:'🐱',風靡:'🌪️',圓潤:'⚫',交織:'🧶',碰撞:'💥',包容:'🫂',膨脹:'🎈',濃稠:'🍯',衡量:'⚖️',徜徉:'🌲',撫摸:'🐶'};
+const synth=window.speechSynthesis;
+let zhVoice=null;
+function pickVoice(){if(!synth)return;zhVoice=synth.getVoices().find(v=>/zh[-_]TW/i.test(v.lang))||synth.getVoices().find(v=>/^zh/i.test(v.lang))||null}
+if(synth){pickVoice();synth.onvoiceschanged=pickVoice}
+function sayList(arr){
+  if(!synth)return;
+  synth.cancel();
+  arr.forEach((t,i)=>{const u=new SpeechSynthesisUtterance(t);u.lang='zh-TW';u.rate=i===0?.8:.9;if(zhVoice)u.voice=zhVoice;synth.speak(u)});
+}
+function say(t){if($('voice').checked)sayList([t])}
+const COLORS=[["#FF6B95","#E02A63"],["#FFA53D","#EE6A00"],["#7ED957","#3BA62A"],["#52C5FF","#1B8CE0"],["#A970FF","#6A34D8"],["#FFD93D","#F0AE00",1]];
+const FILL=["山","水","天","風","雲","花","石","光","田","木","月","星"];
+const $=id=>document.getElementById(id);
+const lesson=$("lesson"),diff=$("diff"),scaf=$("scaf"),gridEl=$("grid"),dlg=$("dlg");
+let board=[],N=4,targets=[],sel=[],cleared=new Set();
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+
+function generate(){
+  const L=VOCAB[lesson.value],d=diff.value;
+  N=d==="hard"?5:4;
+  gridEl.style.gridTemplateColumns=`repeat(${N},minmax(0,1fr))`;
+  const cap=d==="easy"?9:d==="medium"?11:17;let tot=0;targets=[];
+  for(const w of shuffle(L.words)){if(tot+w.word.length<=cap){targets.push(w);tot+=w.word.length}}
+  cleared.clear();sel=[];$("win").classList.remove("show");
+  let ok=false;
+  while(!ok){for(let t=0;t<30&&!ok;t++)ok=place(d);if(!ok){if(targets.length>1)targets.pop();else break}}
+  render();renderPrint();
+}
+function place(d){
+  board=Array.from({length:N},()=>Array(N).fill(null));
+  const D=[[1,0],[-1,0],[0,1],[0,-1]];
+  const walk=(path,len)=>{
+    if(path.length===len)return path;
+    const[l0,l1]=path[path.length-1];
+    for(const[a,b]of shuffle(D)){const r=l0+a,c=l1+b;
+      if(r<0||c<0||r>=N||c>=N||board[r][c]||path.some(p=>p[0]===r&&p[1]===c))continue;
+      const x=walk([...path,[r,c]],len);if(x)return x}
+    return null};
+  const order=targets.map((t,i)=>i).sort((a,b)=>targets[b].word.length-targets[a].word.length);
+  for(const i of order){
+    const w=targets[i].word;let path=null;
+    for(let a=0;a<30&&!path;a++){
+      const r=Math.floor(Math.random()*N),c=Math.floor(Math.random()*N);
+      if(!board[r][c])path=walk([[r,c]],w.length)}
+    if(!path)return false;
+    path.forEach(([r,c],k)=>{board[r][c]={type:"letter",char:w[k],word:w,lead:k===0,ci:i%COLORS.length}});
+  }
+  for(let r=0;r<N;r++)for(let c=0;c<N;c++)if(!board[r][c]){
+    const f={type:"filler",char:FILL[Math.floor(Math.random()*FILL.length)]};
+    board[r][c]=d==="easy"?{type:"choco"}:d==="medium"&&Math.random()>.4?{type:"choco"}:f;
+  }
+  return true;
+}
+function render(){
+  const s=scaf.checked;
+  $("badge").textContent=VOCAB[lesson.value].title.split("　")[0];
+  $("left").textContent=targets.length-cleared.size;
+  $("goals").innerHTML="";
+  targets.forEach((t,i)=>{
+    const c=COLORS[i%COLORS.length],off=cleared.has(t.word),g=document.createElement("div");
+    g.className="goal"+(off?" off":"");
+    g.innerHTML=`<div class="w"><i class="dot" style="--c1:${c[0]};--c2:${c[1]}"></i><span class="t">${t.word}</span><span class="em">${PIC[t.word]||''}</span></div><div class="gb"><button class="mini" aria-label="唸 ${t.word}" onclick="sayList(['${t.word}'])">🔊</button><button class="mini" onclick="meaning('${t.word}')">語意</button></div>`;
+    $("goals").appendChild(g);
+  });
+  gridEl.innerHTML="";
+  for(let r=0;r<N;r++)for(let c=0;c<N;c++){
+    const d=board[r][c],b=document.createElement("button");
+    b.className="tile";
+    if(d.type==="choco"){b.classList.add("choco");b.textContent="🍫";b.disabled=true;b.setAttribute("aria-label","巧克力塊")}
+    else{
+      const done=d.type==="letter"&&cleared.has(d.word),on=sel.some(p=>p.r===r&&p.c===c);
+      b.textContent=d.char;
+      if(done){b.classList.add("done");b.disabled=true}
+      else{
+        if(s&&d.type==="letter"){const k=COLORS[d.ci];b.classList.add("col");if(k[2])b.classList.add("dk");b.style.setProperty("--c1",k[0]);b.style.setProperty("--c2",k[1]);
+          if(d.lead){const l=document.createElement("span");l.className="lead";l.textContent="1";b.appendChild(l)}}
+        if(on)b.classList.add("sel");
+        b.onclick=()=>click(r,c);
+      }
+    }
+    gridEl.appendChild(b);
+  }
+}
+function click(r,c){
+  say(board[r][c].char);
+  const i=sel.findIndex(p=>p.r===r&&p.c===c);
+  if(i>=0){sel.splice(i,1);return render()}
+  if(sel.length){const l=sel[sel.length-1];if(Math.abs(l.r-r)+Math.abs(l.c-c)!==1){sel=[{r,c}];return render()}}
+  if(sel.length>=Math.max(...targets.map(t=>t.word.length)))sel=[];
+  sel.push({r,c});
+  const word=sel.map(p=>board[p.r][p.c].char).join("");
+  const m=targets.find(t=>t.word===word&&!cleared.has(t.word));
+  if(m){
+    cleared.add(m.word);sel=[];render();meaning(m.word);
+    if(cleared.size===targets.length)$("win").classList.add("show");
+  }else render();
+}
+function meaning(w){
+  const f=VOCAB[lesson.value].words.find(x=>x.word===w);if(!f)return;
+  $("mp").textContent=PIC[f.word]||'🍬';$("mw").textContent=f.word;$("md").textContent=f.def;$("ms").innerHTML=f.sentence.replace(f.word,'<mark>'+f.word+'</mark>');dlg.showModal();
+  if($('voice').checked)sayList([f.word,f.def,f.sentence]);
+}
+function renderPrint(){
+  $("ptitle").textContent=VOCAB[lesson.value].title;
+  const wg=$("wgrid");if(!wg.children.length)for(let i=0;i<36;i++)wg.appendChild(document.createElement("div"));
+  const g=$("pgrid");g.innerHTML="";g.style.gridTemplateColumns=`repeat(${N},1fr)`;
+  board.forEach(row=>row.forEach(d=>{const x=document.createElement("div");if(d.type==="choco"){x.className="c";x.textContent="🍫"}else x.textContent=d.char;g.appendChild(x)}));
+  $("ptargets").innerHTML=targets.map((t,i)=>`<div class="pt"><input type="checkbox"><b>${i+1}. ${t.word}</b><span style="font-size:12px;color:#666">${t.def.slice(0,16)}…</span></div>`).join("");
+}
+lesson.onchange=diff.onchange=$("regen").onclick=generate;
+scaf.onchange=render;
+dlg.onclose=()=>{if(synth)synth.cancel()};
+if(!synth){$('voice').checked=false;$('voice').disabled=true}
+generate();
+</script>
+</body>
+</html>
